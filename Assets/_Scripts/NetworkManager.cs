@@ -20,14 +20,15 @@ public class NetworkManager : MonoBehaviour {
     private void Start() {
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = Constants.TICKS_PER_SEC;
-    #if UNITY_EDITOR
-        Debug.LogError("Build the project to start the server");
-    #else
+
         Server.Start(16, 11000);
-    #endif
     }
-    
-    public Player InstantiatePlayer() {
+
+	private void OnApplicationQuit() {
+        Server.Stop();
+	}
+
+	public Player InstantiatePlayer() {
         return Instantiate(playerPrefab, Vector3.zero, Quaternion.identity).GetComponent<Player>();
     }
 }

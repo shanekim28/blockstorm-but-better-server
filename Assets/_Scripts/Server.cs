@@ -5,8 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
-public class Server 
-{
+public class Server {
 	public static int MaxPlayers { get; private set; }
 	public static int Port { get; set; }
 	public static Dictionary<int, Client> clients = new Dictionary<int, Client>();
@@ -30,6 +29,11 @@ public class Server
 		udpListener.BeginReceive(UDPReceiveCallback, null);
 
 		Debug.Log($"Server started on port {Port}.");
+	}
+
+	public static void Stop() {
+		tcpListener.Stop();
+		udpListener.Close();
 	}
 
 	private static void TCPConnectCallback(IAsyncResult result) {
@@ -75,7 +79,6 @@ public class Server
 			}
 		} catch (Exception e) {
 			Debug.Log($"Error receiving UDP data: {e}");
-
 		}
 	}
 
