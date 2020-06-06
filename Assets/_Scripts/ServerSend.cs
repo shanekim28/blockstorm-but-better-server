@@ -50,6 +50,23 @@ public class ServerSend {
 		}
 	}
 
+	public static void PlayerHealth(Player player) {
+		using (Packet packet = new Packet((int) ServerPackets.playerHealth)) {
+			packet.Write(player.id);
+			packet.Write(player.health);
+
+			SendTCPDataToAll(packet);
+		}
+	}
+
+	public static void PlayerRespawned(Player player) {
+		using (Packet packet = new Packet((int) ServerPackets.playerRespawned)) {
+			packet.Write(player.id);
+
+			SendTCPDataToAll(packet);
+		}
+	}
+
 	#endregion
 
 	private static void SendUDPData(int toClient, Packet packet) {

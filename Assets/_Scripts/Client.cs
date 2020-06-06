@@ -170,7 +170,7 @@ public class Client {
 		// Send new player's information to all players
 		foreach (Client client in Server.clients.Values) {
 			if (client.player != null) {
-				ServerSend.SpawnPlayer(client.id, client.player);
+				ServerSend.SpawnPlayer(client.id, player);
 			}
 		}
 	}
