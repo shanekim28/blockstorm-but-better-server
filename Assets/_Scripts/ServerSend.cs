@@ -42,6 +42,14 @@ public class ServerSend {
 		}
 	}
 
+	public static void PlayerDisconnect(int playerId) {
+		using (Packet packet = new Packet((int) ServerPackets.playerDisconnected)) {
+			packet.Write(playerId);
+
+			SendTCPDataToAll(packet);
+		}
+	}
+
 	#endregion
 
 	private static void SendUDPData(int toClient, Packet packet) {
