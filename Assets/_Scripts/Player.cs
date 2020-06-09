@@ -11,6 +11,7 @@ public class Player : MonoBehaviour {
 	public float moveSpeed = 15f;
 	public float jumpSpeed = 15f;
 
+
 	[SerializeField]
 	float minWallrunSpeed;
 
@@ -20,6 +21,8 @@ public class Player : MonoBehaviour {
 	public float wallrunCooldown;
 	[SerializeField]
 	private float wallrunTimer = 0f;
+	private bool wallRunning = false;
+	private int wallRunningDirection = 0;
 
 	internal Quaternion rotation;
 
@@ -79,8 +82,8 @@ public class Player : MonoBehaviour {
 			wallrunTimer = 0;
 		}
 
-		AssignPlayerState();
 		Move(inputDirection);
+		AssignPlayerState();
 	}
 
 	private void Move(Vector2 inputDirection) {
@@ -116,7 +119,10 @@ public class Player : MonoBehaviour {
 	/// </summary>
 	private void CheckWallrun() {
 		// Return if the player can't wallrun
-		if (wallrunTimer != 0 || grounded || Vector3.Dot(rb.velocity, transform.forward) < minWallrunSpeed) return;
+		if (wallrunTimer != 0 || grounded || Vector3.Dot(rb.velocity, transform.forward) < minWallrunSpeed) {
+			wallRunning = false;
+			return;
+		}
 
 		bool wallToLeft = false;
 		bool wallToRight = false;
@@ -139,30 +145,22 @@ public class Player : MonoBehaviour {
 		// find out which one it is and wallrun on that side.
 		if (wallToLeft ^ wallToRight) {	
 			if (wallToLeft) {
-				currentState = PlayerState.WallrunLeft;
+				wallRunningDirection = -1;
 				WallRun(-Vector3.Cross(Vector3.up, leftHit.normal) - transform.right * 0.2f);
 			} else {
-				currentState = PlayerState.WallrunRight;
+				wallRunningDirection = 1;
 				WallRun(Vector3.Cross(Vector3.up, rightHit.normal) + transform.right * 0.2f);
 			}
 			// If we have two wallrunning options,
 			// wallrun on the side that's closer
 		} else if (wallToLeft && wallToRight) {
 			if (leftHit.distance < rightHit.distance) {
-				currentState = PlayerState.WallrunLeft;
+				wallRunningDirection = -1;
 				WallRun(-Vector3.Cross(Vector3.up, leftHit.normal) - transform.right * 0.2f);
 
 			} else {
-				currentState = PlayerState.WallrunRight;
+				wallRunningDirection = 1;
 				WallRun(Vector3.Cross(Vector3.up, rightHit.normal) + transform.right * 0.2f);
-
-			}
-		}
-
-		// If the previous state changed, reset the cooldown
-		if (currentState != lastState) {
-			if (lastState == PlayerState.WallrunLeft || lastState == PlayerState.WallrunRight) {
-				wallrunTimer = wallrunCooldown;
 			}
 		}
 	}
@@ -172,15 +170,16 @@ public class Player : MonoBehaviour {
 	/// </summary>
 	/// <param name="vectorAlongWall">The vector along the wall</param>
 	private void WallRun(Vector3 vectorAlongWall) {
+		wallRunning = true;
 		this.vectorAlongWall = vectorAlongWall;
 		rb.velocity = vectorAlongWall * moveSpeed * 1.5f;
 
 		// Jump while wallrunning
 		if (inputs[4]) {
-			if (currentState == PlayerState.WallrunLeft) {
+			if (wallRunningDirection == -1) {
 				rb.AddForce((transform.up + transform.right).normalized * jumpSpeed * 2, ForceMode.VelocityChange);
 				wallrunTimer = wallrunCooldown;
-			} else if (currentState == PlayerState.WallrunRight) {
+			} else if (wallRunningDirection == 1) {
 				rb.AddForce((transform.up - transform.right).normalized * jumpSpeed * 2, ForceMode.VelocityChange);
 				wallrunTimer = wallrunCooldown;
 			}
@@ -212,6 +211,22 @@ public class Player : MonoBehaviour {
 
 					currentState = PlayerState.Airwalking;
 				}
+			}
+		}
+
+		if (wallRunning) {
+			if (wallRunningDirection == -1) {
+				currentState = PlayerState.WallrunLeft;
+			}
+			else if (wallRunningDirection == 1) {
+				currentState = PlayerState.WallrunRight;
+			}
+		}
+
+		// TODO: Separate wallrunTimer from states
+		if (currentState != lastState) {
+			if (lastState == PlayerState.WallrunLeft || lastState == PlayerState.WallrunRight) {
+				wallrunTimer = wallrunCooldown;
 			}
 		}
 	}
