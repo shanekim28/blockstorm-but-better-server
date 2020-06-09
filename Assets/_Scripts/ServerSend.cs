@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.U2D;
 using UnityEngine;
 
 public class ServerSend {
@@ -28,6 +29,31 @@ public class ServerSend {
 		using (Packet packet = new Packet((int) ServerPackets.playerPosition)) {
 			packet.Write(player.id);
 			packet.Write(player.transform.position);
+
+			SendUDPDataToAll(packet);
+		}
+	}
+
+	public static void PlayerWallrun(Player player, Vector3 vectorAlongWall) {
+		using (Packet packet = new Packet((int) ServerPackets.playerWallrunning)) {
+			packet.Write(player.id);
+
+			int state;
+
+			switch (player.currentState) {
+				case Player.PlayerState.WallrunLeft:
+					state = -1;
+					break;
+				case Player.PlayerState.WallrunRight:
+					state = 1;
+					break;
+				default:
+					state = 0;
+					break;
+			}
+
+			packet.Write(state);
+			packet.Write(vectorAlongWall);
 
 			SendUDPDataToAll(packet);
 		}
