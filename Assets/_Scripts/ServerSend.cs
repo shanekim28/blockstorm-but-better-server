@@ -38,21 +38,7 @@ public class ServerSend {
 		using (Packet packet = new Packet((int) ServerPackets.playerWallrunning)) {
 			packet.Write(player.id);
 
-			int state;
-
-			switch (player.currentState) {
-				case Player.PlayerState.WallrunLeft:
-					state = -1;
-					break;
-				case Player.PlayerState.WallrunRight:
-					state = 1;
-					break;
-				default:
-					state = 0;
-					break;
-			}
-
-			packet.Write(state);
+			packet.Write(player.wallRunningDirection);
 			packet.Write(vectorAlongWall);
 
 			SendUDPDataToAll(packet);

@@ -22,7 +22,7 @@ public class Player : MonoBehaviour {
 	[SerializeField]
 	private float wallrunTimer = 0f;
 	private bool wallRunning = false;
-	private int wallRunningDirection = 0;
+	internal int wallRunningDirection = 0;
 
 	internal Quaternion rotation;
 
@@ -105,13 +105,13 @@ public class Player : MonoBehaviour {
 			}
 		}
 
+
 		CheckWallrun();
 
 		// TODO: Send animation parameters
 		ServerSend.PlayerPosition(this);
 		ServerSend.PlayerRotation(this);
 		ServerSend.PlayerWallrun(this, vectorAlongWall);
-
 	}
 
 	/// <summary>
@@ -120,6 +120,7 @@ public class Player : MonoBehaviour {
 	private void CheckWallrun() {
 		// Return if the player can't wallrun
 		if (wallrunTimer != 0 || grounded || Vector3.Dot(rb.velocity, transform.forward) < minWallrunSpeed) {
+			wallRunningDirection = 0;
 			wallRunning = false;
 			return;
 		}
@@ -162,6 +163,9 @@ public class Player : MonoBehaviour {
 				wallRunningDirection = 1;
 				WallRun(Vector3.Cross(Vector3.up, rightHit.normal) + transform.right * 0.2f);
 			}
+		} else {
+			wallRunningDirection = 0;
+			wallRunning = false;
 		}
 	}
 
