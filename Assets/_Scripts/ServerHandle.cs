@@ -30,7 +30,15 @@ public class ServerHandle {
 
 	public static void PlayerShoot(int fromClient, Packet packet) {
 		Vector3 shootDirection = packet.ReadVector3();
+		Weapon weapon = Server.clients[fromClient].player.GetComponent<Weapon>();
 
-		Server.clients[fromClient].player.Shoot(shootDirection);
+		weapon.Shoot(shootDirection);
+	}
+
+	public static void PlayerReload(int fromClient, Packet packet) {
+		Debug.LogError($"Player {fromClient} reloaded");
+		Weapon weapon = Server.clients[fromClient].player.GetComponent<Weapon>();
+
+		weapon.Reload();
 	}
 }

@@ -79,6 +79,33 @@ public class ServerSend {
 		}
 	}
 
+	public static void PlayerMovementAnimation(Player player) {
+		using (Packet packet = new Packet((int) ServerPackets.playerMovementAnimation)) {
+			packet.Write(player.id);
+			packet.Write((int) player.currentState);
+
+			Debug.Log($"ID: {player.id}, State: {player.currentState}");
+
+			SendUDPData(player.id, packet);
+		}
+	}
+
+	public static void PlayerShootAnimation(Player player) {
+		using (Packet packet = new Packet((int) ServerPackets.playerShootAnimation)) {
+			packet.Write(player.id);
+
+			SendTCPData(player.id, packet);
+		}
+	}
+
+	public static void PlayerReloadAnimation(Player player) {
+		using (Packet packet = new Packet((int) ServerPackets.playerReloadAnimation)) {
+			packet.Write(player.id);
+
+			SendTCPData(player.id, packet);
+		}
+	}
+
 	#endregion
 
 	private static void SendUDPData(int toClient, Packet packet) {

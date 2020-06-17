@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 611578314229617655}
   - component: {fileID: 5435511217835682320}
   - component: {fileID: 4219888380673155922}
+  - component: {fileID: 4344054193703666120}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -53,10 +54,10 @@ MonoBehaviour:
   gravity: -9.81
   moveSpeed: 7
   jumpSpeed: 5
+  minWallrunSpeed: 0
   wallRunDist: 1
   wallrunCooldown: 0.5
   wallrunTimer: 0
-  shootOrigin: {fileID: 6424903006789256323}
   health: 0
   maxHealth: 100
   currentState: 1
@@ -89,6 +90,25 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: -1.36, z: 0}
+--- !u!114 &4344054193703666120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 611578314229617654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c37ef9b30e39994eb4e69e50faa3576, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  muzzle: {fileID: 6424903006789256323}
+  maxAmmo: 30
+  currentAmmo: 0
+  fireRate: 750
+  bulletsPerShot: 1
+  reloadTime: 2.667
+  reloadDelay: 0.7
 --- !u!1 &864412911985906779
 GameObject:
   m_ObjectHideFlags: 0

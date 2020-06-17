@@ -2,6 +2,7 @@
 using UnityEngine;
 
 // TODO: Change jump to TCP (optional)
+// TODO: Fix animation cancelling when shooting or reloading
 public class Player : MonoBehaviour {
 	public int id;
 	public string username;
@@ -24,9 +25,11 @@ public class Player : MonoBehaviour {
 	private bool wallRunning = false;
 	internal int wallRunningDirection = 0;
 
-	internal Quaternion rotation;
+	private bool shooting = false;
+	private bool reloading = false;
 
-	public Transform shootOrigin;
+	internal Quaternion rotation;
+	
 	public float health;
 	public float maxHealth = 100f;
 
@@ -44,7 +47,7 @@ public class Player : MonoBehaviour {
 		Idle = 1,
 		Walking, Falling, Airwalking, Jumping,
 		WallrunLeft, WallrunRight, 
-		Grappling
+		Grappling,
 	}
 
 	public void Initialize(int id, string username) {
@@ -53,7 +56,7 @@ public class Player : MonoBehaviour {
 
 		health = maxHealth;
 
-		inputs = new bool[5];
+		inputs = new bool[6];
 	}
 
 	public void FixedUpdate() {
@@ -84,6 +87,9 @@ public class Player : MonoBehaviour {
 
 		Move(inputDirection);
 		AssignPlayerState();
+
+		// TODO: Send animations to client
+		SendAnimationState();
 	}
 
 	private void Move(Vector2 inputDirection) {
@@ -104,7 +110,6 @@ public class Player : MonoBehaviour {
 				rb.AddForce(moveDirection, ForceMode.Acceleration);
 			}
 		}
-
 
 		CheckWallrun();
 
@@ -235,22 +240,17 @@ public class Player : MonoBehaviour {
 		}
 	}
 
+	private void SendAnimationState() {
+		ServerSend.PlayerMovementAnimation(this);
+	}
+
 	public void SetInput(bool[] inputs, Quaternion rotation) {
 		this.inputs = inputs;
 		transform.rotation = rotation;
 	}
 
-	public void Shoot(Vector3 direction) {
-		if (Physics.Raycast(shootOrigin.position, direction, out RaycastHit hit, 25f)) {
-
-			if (hit.collider.CompareTag("Player")) {
-				hit.collider.GetComponentInParent<Player>().TakeDamage(50f);
-			}
-		}
-	}
-
 	public void TakeDamage(float damage) {
-		Debug.LogError($"Player {id} took damage");
+		Debug.Log($"Player {id} took damage");
 		if (health <= 0f) {
 			return;
 		}
