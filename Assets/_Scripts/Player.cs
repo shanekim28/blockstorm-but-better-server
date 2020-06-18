@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+public delegate void Die();
+
 // TODO: Change jump to TCP (optional)
-// TODO: Fix animation cancelling when shooting or reloading
 public class Player : MonoBehaviour {
+	public static event Die OnDie;
+
 	public int id;
 	public string username;
 
@@ -11,7 +14,6 @@ public class Player : MonoBehaviour {
 	public float gravity = -9.81f;
 	public float moveSpeed = 15f;
 	public float jumpSpeed = 15f;
-
 
 	[SerializeField]
 	float minWallrunSpeed;
@@ -24,9 +26,6 @@ public class Player : MonoBehaviour {
 	private float wallrunTimer = 0f;
 	private bool wallRunning = false;
 	internal int wallRunningDirection = 0;
-
-	private bool shooting = false;
-	private bool reloading = false;
 
 	internal Quaternion rotation;
 	
@@ -260,9 +259,9 @@ public class Player : MonoBehaviour {
 		// TODO: Add more death stuff
 		// NOTE: Some parts of player death are handled client-side, like viewmodel disappearing and resetting health after respawn
 		if (health <= 0f) {
+			OnDie?.Invoke();
 			health = 0f;
 
-			// TODO: Disable rigidbody
 			GetComponent<Rigidbody>().isKinematic = true;
 			transform.position = new Vector3(0, 10f, 0);
 			ServerSend.PlayerPosition(this);

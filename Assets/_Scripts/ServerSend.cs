@@ -41,7 +41,7 @@ public class ServerSend {
 			packet.Write(player.wallRunningDirection);
 			packet.Write(vectorAlongWall);
 
-			SendUDPDataToAll(packet);
+			SendUDPData(player.id, packet);
 		}
 	}
 
@@ -90,17 +90,20 @@ public class ServerSend {
 		}
 	}
 
-	public static void PlayerShootAnimation(Player player) {
+	public static void PlayerShootAnimation(Player player, Weapon weapon) {
 		using (Packet packet = new Packet((int) ServerPackets.playerShootAnimation)) {
 			packet.Write(player.id);
+			packet.Write(weapon.Ammo);
 
 			SendTCPData(player.id, packet);
 		}
 	}
 
-	public static void PlayerReloadAnimation(Player player) {
+	public static void PlayerReloadAnimation(Player player, Weapon weapon) {
 		using (Packet packet = new Packet((int) ServerPackets.playerReloadAnimation)) {
 			packet.Write(player.id);
+			packet.Write(weapon.MaxAmmo);
+			packet.Write(weapon.ReloadTime);
 
 			SendTCPData(player.id, packet);
 		}
